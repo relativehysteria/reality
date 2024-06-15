@@ -9,7 +9,8 @@ scraper = bezrealitky.Scraper(regions)
 listings = scraper.scrape()
 
 for listing in listings:
-    print(f"{listing.id:<6} | {listing.disposition:<9} | " +
-          f"{listing.surface:<3} | {listing.price + listing.charges:<5}")
+    print(f"{listing.disposition[5:].replace('_', '+'):>4}" +
+          f" | {listing.surface:>3}m" +
+          f" | {listing.price + listing.charges:<5},-")
 
 print(f"{len(listings)} available")
