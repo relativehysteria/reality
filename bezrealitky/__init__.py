@@ -7,7 +7,7 @@ GRAPH_URL = "https://api.bezrealitky.cz/graphql/"
 
 def dispositions(min_disp: int = 1, max_disp: int = 7) -> [str]:
     dispositions = []
-    for disp in range(min_disp, min(max_disp, 7)):
+    for disp in range(min_disp, min(max_disp + 1, 8)):
         dispositions.append(f"DISP_{disp}_1")
         dispositions.append(f"DISP_{disp}_KK")
     return dispositions
