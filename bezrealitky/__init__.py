@@ -13,7 +13,7 @@ def dispositions(min_disp: int = 1, max_disp: int = 7) -> [str]:
     return dispositions
 
 
-def query_osm(query: str) -> str:
+def query_region(query: str) -> str:
     url = "https://autocomplete.bezrealitky.cz/autocomplete?size=1"
     query = quote_plus(query)
     req = requests.get(f"{url}&q={query}")
