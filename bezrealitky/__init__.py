@@ -36,6 +36,11 @@ class Listing:
     def __str__(self):
         return str(vars(self))
 
+    def images(self):
+        if self.images is not None:
+            return self.images
+        return self.scrape_images()
+
     def scrape_images(self):
         headers = { "content-type": "application/json", }
         payload = {
