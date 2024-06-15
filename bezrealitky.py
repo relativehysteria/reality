@@ -34,7 +34,9 @@ GRAPH_QUERY = """
             list {
                 id
                 disposition
-                imageAltText(locale: $locale)
+                mainImageUrl: mainImage {
+                    url(filter: RECORD_THUMB)
+                }
                 address(locale: $locale)
                 surface
                 tags(locale: $locale)
@@ -89,6 +91,9 @@ def query_osm(query: str) -> str:
 class Listing:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+
+        if self.mainImageUrl:
+            self.mainImageUrl = self.mainImageUrl['url']
 
     def __str__(self):
         return str(vars(self))
