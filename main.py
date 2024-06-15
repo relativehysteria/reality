@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from concurrent.futures import ThreadPoolExecutor
 import bezrealitky
 
 regions = [bezrealitky.query_osm("okres Brno-město"),
@@ -7,6 +8,9 @@ regions = [bezrealitky.query_osm("okres Brno-město"),
 
 scraper = bezrealitky.Scraper(regions)
 listings = scraper.scrape()
+
+net_pool = ThreadPoolExecutor(max_workers=10)
+net_pool.map(bezrealitky.Listing.scrape_images, listings)
 
 for listing in listings:
     print(f"{listing.disposition[5:].replace('_', '+'):>4}" +
