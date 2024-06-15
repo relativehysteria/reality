@@ -95,7 +95,7 @@ class Listing:
 
 
 class Scraper:
-    def __init__(self, regions, dispositions=dispositions(),
+    def __init__(self, regions, dispositions=dispositions(), petFriendly=None,
                  priceFrom=None, priceTo=None,
                  surfaceFrom=None, surfaceTo=None):
         self.limit = 0
@@ -106,6 +106,7 @@ class Scraper:
         self.regionOsmIds = regions
         self.roommate = False
         self.location = "exact"
+        self.petFriendly = petFriendly
         self.currency = "CZK"
         self.priceFrom = priceFrom
         self.priceTo = priceTo
@@ -117,7 +118,13 @@ class Scraper:
         assert self.disposition
         assert self.regionOsmIds
 
-        for attr in ['priceFrom', 'priceTo', 'surfaceFrom', 'surfaceTo']:
+        for attr in [
+            "priceFrom",
+            "priceTo",
+            "surfaceFrom",
+            "surfaceTo",
+            "petFriendly",
+        ]:
             value = getattr(self, attr)
             assert value is None or isinstance(value, int)
 
