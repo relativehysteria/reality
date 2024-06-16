@@ -1,5 +1,6 @@
-import requests
 from . import queries
+from classes import *
+import requests
 from urllib.parse import quote_plus
 
 GRAPH_URL = "https://api.bezrealitky.cz/graphql/"
@@ -26,17 +27,17 @@ def query_region(query: str) -> str:
     return f"{osm_type}{osm_id}"
 
 
-class Listing:
+class Listing(ListingRoot):
     def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
+        self.ident = kwargs['id']
+        self.disposition = kwargs['disposition'][5:].replace('_', '+')
+        self.area = kwargs['surface']
+        self.price = kwargs['price'] + kwargs['charges']
         self.images = None
         if self.mainImageUrl:
             self.mainImageUrl = self.mainImageUrl['url']
 
-    def __str__(self):
-        return str(vars(self))
-
-    def images(self):
+    def get_images(self):
         if self.images is not None:
             return self.images
         return self.scrape_images()
@@ -56,10 +57,9 @@ class Listing:
         return self.images
 
 
-class Scraper:
-    def __init__(self, regions, dispositions=dispositions(), petFriendly=None,
-                 priceFrom=None, priceTo=None,
-                 surfaceFrom=None, surfaceTo=None):
+class Scraper(ScraperRoot):
+    def __init__(self, regions, dispositions,
+                 price=(None, None), area=(None, None), petFriendly=False):
         self.limit = 0
         self.locale = "CS"
         self.offerType = ["PRONAJEM"]
@@ -70,10 +70,10 @@ class Scraper:
         self.location = "exact"
         self.petFriendly = petFriendly
         self.currency = "CZK"
-        self.priceFrom = priceFrom
-        self.priceTo = priceTo
-        self.surfaceFrom = surfaceFrom
-        self.surfaceTo = surfaceTo
+        self.priceFrom = price[0]
+        self.priceTo = price[1]
+        self.surfaceFrom = area[0]
+        self.surfaceTo = area[1]
 
     def scrape(self) -> [Listing]:
         headers = { "content-type": "application/json", }
