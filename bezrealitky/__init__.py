@@ -33,7 +33,7 @@ def query_region(query: str) -> str:
 
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
-        self.ident = kwargs['id']
+        self.id = kwargs['id']
         self.disposition = disposition_str(kwargs['disposition'])
         self.location = kwargs['address']
         self.area = kwargs['surface']
