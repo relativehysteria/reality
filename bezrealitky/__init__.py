@@ -37,7 +37,8 @@ class Listing(ListingRoot):
         self.disposition = disposition_str(kwargs['disposition'])
         self.location = kwargs['address']
         self.area = kwargs['surface']
-        self.price = kwargs['price'] + kwargs['charges']
+        self.price = kwargs['price']
+        self.charges = kwargs['charges']
         self.images = None
         self.mainImageUrl = None
         if kwargs['mainImageUrl']:
