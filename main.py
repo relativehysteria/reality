@@ -29,7 +29,4 @@ all_listings = list(br_listings) + list(sr_listings)
 all_listings.sort(key=lambda x: x.price)
 
 for listing in all_listings:
-    print(f"{listing.disposition:>4}" +
-          f" | {listing.area:>3}m" +
-          f" | {listing.price:>5},-" +
-          f" | {listing.location}")
+    print(listing)
