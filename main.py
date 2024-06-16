@@ -17,7 +17,8 @@ import sreality
 # for listing in listings:
 #     print(f"{listing:>4}" +
 #           f" | {listing.area:>3}m" +
-#           f" | {listing.price:>5},-")
+#           f" | {listing.price:>5},-" +
+#           f" | {listing.locality}")
 #
 # print(f"{len(listings)} available")
 
@@ -36,4 +37,5 @@ listings = scraper.scrape()
 for listing in listings:
     print(f"{listing.disposition:>4}" +
           f" | {listing.area:>3}m" +
-          f" | {listing.price:>5},-")
+          f" | {listing.price:>5},-" +
+          f" | {listing.locality}")

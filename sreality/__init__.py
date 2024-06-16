@@ -2,13 +2,20 @@ from classes import *
 import requests
 from urllib.parse import quote_plus, urlencode
 
-# TODO: 13 pokoj | 47 atypicky
+
 def dispositions(min_disp: int = 1, max_disp: int = 6) -> str:
     dispositions = []
     for disp in range(min_disp, min(max_disp + 1, 6)):
         dispositions.append(disp * 2)
         dispositions.append(disp * 2 + 1)
     return dispositions
+
+
+def disposition_str(disp_int: int) -> str:
+    disp_rooms = disp_int / 2
+    if disp_rooms % 2 == 0:
+        return f"{disp_rooms}+KK"
+    return f"{disp_rooms}+1"
 
 
 def query_region(query: str) -> str:
@@ -29,7 +36,8 @@ def min_max(var=(None, None)):
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
         self.ident = kwargs['hash_id']
-        self.disposition = "" # TODO
+        self.disposition = disposition_str(kwargs['seo']['category_sub_cb'])
+        self.location = kwargs['locality']
         self.area = kwargs['name'].split()[-2]
         self.price = kwargs['price']
         self.images = None
@@ -66,4 +74,5 @@ class Scraper(ScraperRoot):
             prepared.url += '?' + urlencode(vars(self), safe='|')
             req = session.send(prepared)
 
+        # TODO: the first estate tends to be some shitter. investigate.
         return [Listing(**i) for i in req.json()['_embedded']['estates']]
