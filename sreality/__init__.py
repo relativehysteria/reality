@@ -14,7 +14,7 @@ def dispositions(min_disp: int = 1, max_disp: int = 6) -> str:
 def disposition_str(disp_int: int) -> str:
     disp_rooms = int(disp_int / 2)
     if disp_rooms % 2 == 0:
-        return f"{disp_rooms}+KK"
+        return f"{disp_rooms}+kk"
     return f"{disp_rooms}+1"
 
 

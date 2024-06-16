@@ -15,7 +15,7 @@ def dispositions(min_disp: int = 1, max_disp: int = 7) -> [str]:
 
 
 def disposition_str(disp_string: str) -> str:
-    return disp_string[5:].replace('_', '+')
+    return disp_string[5:].replace('_', '+').lower()
 
 
 def query_region(query: str) -> str:
