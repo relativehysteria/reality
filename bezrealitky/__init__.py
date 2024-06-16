@@ -39,6 +39,8 @@ class Listing(ListingRoot):
         self.area = kwargs['surface']
         self.price = kwargs['price']
         self.charges = kwargs['charges']
+        self.url  = "https://www.bezrealitky.cz/nemovitosti-byty-domy/"
+        self.url += kwargs['uri']
         self.images = None
         self.mainImageUrl = None
         if kwargs['mainImageUrl']:

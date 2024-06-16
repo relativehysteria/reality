@@ -5,6 +5,7 @@ class ListingRoot:
         self.area = None
         self.price = None
         self.images = None
+        self.url = None
 
     def __str__(self):
         return f"{self.disposition:>4}" +\

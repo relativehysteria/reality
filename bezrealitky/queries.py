@@ -41,6 +41,7 @@ INITIAL = """
             currency: $currency
         ) {
             list {
+                uri
                 id
                 disposition
                 mainImageUrl: mainImage {

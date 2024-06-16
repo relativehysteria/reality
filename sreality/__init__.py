@@ -41,6 +41,7 @@ class Listing(ListingRoot):
         self.area = kwargs['name'].split()[-2]
         self.price = kwargs['price']
         self.images = [i['href'] for i in kwargs['_links']['images']]
+        self.url = NotImplemented
 
     def get_images(self):
         return self.images
