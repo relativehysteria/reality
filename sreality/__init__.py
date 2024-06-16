@@ -41,7 +41,8 @@ class Listing(ListingRoot):
         self.area = kwargs['name'].split()[-2]
         self.price = kwargs['price']
         self.images = [i['href'] for i in kwargs['_links']['images']]
-        self.url = NotImplemented
+        self.url  = "https://www.sreality.cz/detail/pronajem/byt/"
+        self.url += f"{self.disposition}/{kwargs['seo']['locality']}/{self.id}"
 
     def get_images(self):
         return self.images
