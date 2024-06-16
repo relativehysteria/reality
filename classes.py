@@ -1,7 +1,7 @@
 class ListingRoot:
     def __init__(self, **kwargs):
         self.ident = None
-        self.dispositin = None
+        self.disposition = None
         self.area = None
         self.price = None
         self.images = None
