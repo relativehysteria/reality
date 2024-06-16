@@ -38,7 +38,7 @@ class Listing(ListingRoot):
         self.id = kwargs['hash_id']
         self.disposition = disposition_str(kwargs['seo']['category_sub_cb'])
         self.location = kwargs['locality']
-        self.area = kwargs['name'].split()[-2]
+        self.area = kwargs['name'].split('(')[0].split()[-2]
         self.price = kwargs['price']
         self.images = [i['href'] for i in kwargs['_links']['images']]
         self.url  = "https://www.sreality.cz/detail/pronajem/byt/"

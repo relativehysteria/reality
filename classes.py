@@ -9,7 +9,7 @@ class ListingRoot:
 
     def __str__(self):
         return f"{self.disposition:>4}" +\
-               f" | {self.area:>3}m" +\
+               f" | {self.area:>3}m²" +\
                f" | {self.price:>5},-" +\
                f" | {self.location}"
 
