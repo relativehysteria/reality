@@ -18,7 +18,7 @@ import sreality
 #     print(f"{listing:>4}" +
 #           f" | {listing.area:>3}m" +
 #           f" | {listing.price:>5},-" +
-#           f" | {listing.locality}")
+#           f" | {listing.location}")
 #
 # print(f"{len(listings)} available")
 
@@ -31,11 +31,12 @@ dispositions = [6] + sreality.dispositions(4)
 scraper = sreality.Scraper(regions, dispositions)
 listings = scraper.scrape()
 
-#net_pool = ThreadPoolExecutor(max_workers=10)
-#net_pool.map(sreality.Listing.scrape_images, listings)
+scrape_pool = ThreadPoolExecutor(max_workers=10)
+scrape_pool.map(sreality.Listing.scrape_images, listings)
 
 for listing in listings:
     print(f"{listing.disposition:>4}" +
           f" | {listing.area:>3}m" +
           f" | {listing.price:>5},-" +
-          f" | {listing.locality}")
+          f" | {listing.location}")
+breakpoint()

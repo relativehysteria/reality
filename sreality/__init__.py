@@ -12,7 +12,7 @@ def dispositions(min_disp: int = 1, max_disp: int = 6) -> str:
 
 
 def disposition_str(disp_int: int) -> str:
-    disp_rooms = disp_int / 2
+    disp_rooms = int(disp_int / 2)
     if disp_rooms % 2 == 0:
         return f"{disp_rooms}+KK"
     return f"{disp_rooms}+1"
@@ -40,9 +40,20 @@ class Listing(ListingRoot):
         self.location = kwargs['locality']
         self.area = kwargs['name'].split()[-2]
         self.price = kwargs['price']
-        self.images = None
+        self.images = [i['href'] for i in kwargs['_links']['images']]
 
-    # TODO: images
+    def get_images(self):
+        return self.images
+
+    def scrape_images(self):
+        # XXX: This doesn't "scrape" the images per se, just replaces their
+        # url with a higher resolution watermarked image
+        x = '?fl=res,1920,1080,1|wrm,/watermark/sreality.png,10|shr,,20|jpg,90'
+        for (idx, img) in enumerate(self.images):
+            img  = img.split('?')[0]
+            img += x
+            self.images[idx] = img
+        return self.images
 
 
 class Scraper(ScraperRoot):
