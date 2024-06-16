@@ -31,7 +31,7 @@ scraper = sreality.Scraper(regions, dispositions)
 listings = scraper.scrape()
 
 #net_pool = ThreadPoolExecutor(max_workers=10)
-#net_pool.map(bezrealitky.Listing.scrape_images, listings)
+#net_pool.map(sreality.Listing.scrape_images, listings)
 
 for listing in listings:
     print(f"{listing.disposition:>4}" +
