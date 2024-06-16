@@ -14,7 +14,7 @@ def dispositions(min_disp: int = 1, max_disp: int = 7) -> [str]:
     return dispositions
 
 
-def disposition_readable(disp_string: str) -> str:
+def disposition_str(disp_string: str) -> str:
     return disp_string[5:].replace('_', '+')
 
 
@@ -34,13 +34,14 @@ def query_region(query: str) -> str:
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
         self.ident = kwargs['id']
-        self.disposition = disposition_readable(kwargs['disposition'])
-        self.location = "" # TODO
+        self.disposition = disposition_str(kwargs['disposition'])
+        self.location = kwargs['address']
         self.area = kwargs['surface']
         self.price = kwargs['price'] + kwargs['charges']
         self.images = None
-        if self.mainImageUrl:
-            self.mainImageUrl = self.mainImageUrl['url']
+        self.mainImageUrl = None
+        if kwargs['mainImageUrl']:
+            self.mainImageUrl = kwargs['mainImageUrl']['url']
 
     def get_images(self):
         if self.images is not None:
