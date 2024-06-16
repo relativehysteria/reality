@@ -14,6 +14,10 @@ def dispositions(min_disp: int = 1, max_disp: int = 7) -> [str]:
     return dispositions
 
 
+def disposition_readable(disp_string: str) -> str:
+    return disp_string[5:].replace('_', '+')
+
+
 def query_region(query: str) -> str:
     url = "https://autocomplete.bezrealitky.cz/autocomplete?size=1"
     query = quote_plus(query)
@@ -30,7 +34,8 @@ def query_region(query: str) -> str:
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
         self.ident = kwargs['id']
-        self.disposition = kwargs['disposition'][5:].replace('_', '+')
+        self.disposition = disposition_readable(kwargs['disposition'])
+        self.location = "" # TODO
         self.area = kwargs['surface']
         self.price = kwargs['price'] + kwargs['charges']
         self.images = None
