@@ -3,19 +3,24 @@ import requests
 from urllib.parse import quote_plus, urlencode
 
 
-def dispositions(min_disp: int = 1, max_disp: int = 6) -> str:
-    dispositions = []
-    for disp in range(min_disp, min(max_disp + 1, 6)):
-        dispositions.append(disp * 2)
-        dispositions.append(disp * 2 + 1)
-    return dispositions
+class Dispositions(DispositionsRoot):
+    @classmethod
+    def disp_str_to_api(cls, disp_str: str):
+        nrooms = int(disp_str[0]) * 2
+        match disp_str.lower()[-2:]:
+            case "kk":
+                return nrooms
+            case "+1":
+                return nrooms + 1
+            case _:
+                raise ValueError("incorrect disposition")
 
-
-def disposition_str(disp_int: int) -> str:
-    disp_rooms = int(disp_int / 2)
-    if disp_rooms % 2 == 0:
-        return f"{disp_rooms}+kk"
-    return f"{disp_rooms}+1"
+    @classmethod
+    def api_to_disp_str(cls, api_disp: int):
+        disp_rooms = int(api_disp / 2)
+        if disp_rooms % 2 == 0:
+            return f"{disp_rooms}+kk"
+        return f"{disp_rooms}+1"
 
 
 def query_region(query: str) -> str:
@@ -36,7 +41,8 @@ def min_max(var=(None, None)):
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
         self.id = kwargs['hash_id']
-        self.disposition = disposition_str(kwargs['seo']['category_sub_cb'])
+        self.disposition = Dispositions.api_to_disp_str(
+                kwargs['seo']['category_sub_cb'])
         self.location = kwargs['locality']
         self.area = kwargs['name'].split('(')[0].split()[-2]
         self.price = kwargs['price']
@@ -59,7 +65,7 @@ class Listing(ListingRoot):
 
 
 class Scraper(ScraperRoot):
-    def __init__(self, regions, dispositions,
+    def __init__(self, regions, dispositions: Dispositions,
                  price=(None, None), area=(None, None)):
         # flats only, no houses. fuck seznam. can't believe i worked there.
         # number of rooms for flats is stored in `category_sub_cb`

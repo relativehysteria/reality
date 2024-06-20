@@ -8,20 +8,22 @@ pool = ThreadPoolExecutor(max_workers=10)
 
 
 regions = ["okres Brno-město", "okres Brno-venkov"]
+dispositions = ["1kk", "1+1"]
+
 br_regions = pool.map(bezrealitky.query_region, regions.copy())
 sr_regions = pool.map(sreality.query_region, regions.copy())
 
-br_dispositions = ["DISP_3_1"] + bezrealitky.dispositions(4)
+br_dispositions = bezrealitky.Dispositions(dispositions.copy())
 br_scraper = bezrealitky.Scraper(list(br_regions), br_dispositions)
 br_listings = pool.submit(bezrealitky.Scraper.scrape, br_scraper)
 
-sr_dispositions = [6] + sreality.dispositions(4)
+sr_dispositions = sreality.Dispositions(dispositions.copy())
 sr_scraper = sreality.Scraper(list(sr_regions), sr_dispositions)
 sr_listings = pool.submit(sreality.Scraper.scrape, sr_scraper)
 
-# # these are meant to run in the background; we don't care about their results
-# pool.map(bezrealitky.Listing.scrape_images, br_listings.result())
-# pool.map(sreality.Listing.scrape_images, sr_listings.result())
+# these are meant to run in the background; we don't care about their results
+pool.map(bezrealitky.Listing.scrape_images, br_listings.result())
+pool.map(sreality.Listing.scrape_images, sr_listings.result())
 
 br_listings = br_listings.result()
 sr_listings = sr_listings.result()

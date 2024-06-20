@@ -5,17 +5,15 @@ from urllib.parse import quote_plus
 
 GRAPH_URL = "https://api.bezrealitky.cz/graphql/"
 
+class Dispositions(DispositionsRoot):
+    @classmethod
+    def disp_str_to_api(cls, disp_str: str):
+        disp_str = disp_str.replace('kk', '+kk').replace('+', '_').upper()
+        return f"DISP_{disp_str}"
 
-def dispositions(min_disp: int = 1, max_disp: int = 7) -> [str]:
-    dispositions = []
-    for disp in range(min_disp, min(max_disp + 1, 8)):
-        dispositions.append(f"DISP_{disp}_1")
-        dispositions.append(f"DISP_{disp}_KK")
-    return dispositions
-
-
-def disposition_str(disp_string: str) -> str:
-    return disp_string[5:].replace('_', '+').lower()
+    @classmethod
+    def api_to_disp_str(cls, api_disp: str):
+        return api_disp.replace("DISP_", "").replace("_", '+').lower()
 
 
 def query_region(query: str) -> str:
@@ -34,7 +32,7 @@ def query_region(query: str) -> str:
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
         self.id = kwargs['id']
-        self.disposition = disposition_str(kwargs['disposition'])
+        self.disposition = Dispositions.api_to_disp_str(kwargs['disposition'])
         self.location = kwargs['address']
         self.area = kwargs['surface']
         self.price = kwargs['price']
@@ -67,13 +65,13 @@ class Listing(ListingRoot):
 
 
 class Scraper(ScraperRoot):
-    def __init__(self, regions, dispositions,
+    def __init__(self, regions, dispositions: Dispositions,
                  price=(None, None), area=(None, None), petFriendly=False):
         self.limit = 0
         self.locale = "CS"
         self.offerType = ["PRONAJEM"]
         self.estateType = ["BYT", "DUM"]
-        self.disposition = dispositions
+        self.disposition = list(dispositions.inner)
         self.regionOsmIds = regions
         self.roommate = False
         self.location = "exact"
