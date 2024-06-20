@@ -22,6 +22,16 @@ class Dispositions(DispositionsRoot):
             return f"{disp_rooms}+kk"
         return f"{disp_rooms}+1"
 
+    @classmethod
+    def verify_disp_str(cls, disp_str: str):
+        try:
+            nrooms, disp_type = disp_str.lower().split("+")
+            valid_nrooms = int(nrooms) > 0 and int(nrooms) < 7
+            valid_type = disp_type == "kk" or disp_type == "1"
+            return valid_nrooms and valid_type
+        except:
+            return false
+
 
 def query_region(query: str) -> str:
     url = "https://www.sreality.cz/api/v1/localities/suggest?limit=1"

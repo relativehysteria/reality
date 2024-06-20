@@ -2,16 +2,27 @@
 # 1kk, 1+1, 2kk, 2+2 etc.
 class DispositionsRoot:
     def __init__(self, disp_list=[]):
-        self.inner = set(self.disp_str_to_api(disp) for disp in disp_list)
+        self.inner = set()
+
+        for disp in disp_list:
+            self.add(disp)
 
     def __iter__(self):
         return iter(self.inner)
 
     def add(self, disp_str: str):
+        assert self.verify_disp_str(disp_str), \
+                f"Invalid disposition string: {disp_str}"
         self.inner.add(self.disp_str_to_api(disp_str))
 
     def remove(self, disp_str: str):
+        assert self.verify_disp_str(disp_str), \
+                f"Invalid disposition string: {disp_str}"
         self.inner.remove(self.disp_str_to_api(disp_str))
+
+    @classmethod
+    def verify_disp_str(cls, disp_str: str):
+        raise NotImplementedError
 
     @classmethod
     def api_to_disp_str(cls, api_disp):

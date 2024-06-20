@@ -8,12 +8,22 @@ GRAPH_URL = "https://api.bezrealitky.cz/graphql/"
 class Dispositions(DispositionsRoot):
     @classmethod
     def disp_str_to_api(cls, disp_str: str):
-        disp_str = disp_str.replace('kk', '+kk').replace('+', '_').upper()
+        disp_str = disp_str.replace('+', '_').upper()
         return f"DISP_{disp_str}"
 
     @classmethod
     def api_to_disp_str(cls, api_disp: str):
         return api_disp.replace("DISP_", "").replace("_", '+').lower()
+
+    @classmethod
+    def verify_disp_str(cls, disp_str: str):
+        try:
+            nrooms, disp_type = disp_str.lower().split("+")
+            valid_nrooms = int(nrooms) > 0 and int(nrooms) < 8
+            valid_type = disp_type == "kk" or disp_type == "1"
+            return valid_nrooms and valid_type
+        except:
+            return false
 
 
 def query_region(query: str) -> str:

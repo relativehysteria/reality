@@ -8,7 +8,7 @@ pool = ThreadPoolExecutor(max_workers=10)
 
 
 regions = ["okres Brno-město", "okres Brno-venkov"]
-dispositions = ["1kk", "1+1"]
+dispositions = ["1+kk", "1+1"]
 
 br_regions = pool.map(bezrealitky.query_region, regions.copy())
 sr_regions = pool.map(sreality.query_region, regions.copy())
