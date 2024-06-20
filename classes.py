@@ -1,5 +1,5 @@
 # Dispositions are in the form of
-# 1kk, 1+1, 2kk, 2+2 etc.
+# 1+kk, 1+1, 2+kk, 2+2 etc.
 class DispositionsRoot:
     def __init__(self, disp_list=[]):
         self.inner = set()
