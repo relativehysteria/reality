@@ -62,3 +62,7 @@ class ScraperRoot:
 
     def scrape(self) -> ListingRoot:
         raise NotImplementedError
+
+    @classmethod
+    def query_region(cls, query: str) -> str:
+        raise NotImplementedError

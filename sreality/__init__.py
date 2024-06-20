@@ -33,15 +33,6 @@ class Dispositions(DispositionsRoot):
             return false
 
 
-def query_region(query: str) -> str:
-    url = "https://www.sreality.cz/api/v1/localities/suggest?limit=1"
-    query = quote_plus(query)
-    req = requests.get(f"{url}&phrase={query}")
-
-    # TODO: handle request and parse errors
-    return req.json()['results'][0]['userData']['district_id']
-
-
 def min_max(var=(None, None)):
     res  = str(var[0]) if var[0] else "0"
     res += f"|{var[1]}" if var[1] else ""
@@ -88,6 +79,14 @@ class Scraper(ScraperRoot):
         self.czk_price_summary_order2 = min_max(price)
         self.usable_area = min_max(area)
 
+    @classmethod
+    def query_region(cls, query: str) -> str:
+        url = "https://www.sreality.cz/api/v1/localities/suggest?limit=1"
+        query = quote_plus(query)
+        req = requests.get(f"{url}&phrase={query}")
+
+        # TODO: handle request and parse errors
+        return req.json()['results'][0]['userData']['district_id']
 
     def scrape(self) -> [Listing]:
         url = "https://www.sreality.cz/api/cs/v2/estates"

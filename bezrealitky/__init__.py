@@ -26,19 +26,6 @@ class Dispositions(DispositionsRoot):
             return false
 
 
-def query_region(query: str) -> str:
-    url = "https://autocomplete.bezrealitky.cz/autocomplete?size=1"
-    query = quote_plus(query)
-    req = requests.get(f"{url}&q={query}")
-
-    # TODO: handle request and parse errors
-    data = req.json()
-    props = data['features'][0]['properties']
-    osm_type = props['osm_type']
-    osm_id   = props['osm_id']
-    return f"{osm_type}{osm_id}"
-
-
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
         self.id = kwargs['id']
@@ -91,6 +78,19 @@ class Scraper(ScraperRoot):
         self.priceTo = price[1]
         self.surfaceFrom = area[0]
         self.surfaceTo = area[1]
+
+    @classmethod
+    def query_region(cls, query: str) -> str:
+        url = "https://autocomplete.bezrealitky.cz/autocomplete?size=1"
+        query = quote_plus(query)
+        req = requests.get(f"{url}&q={query}")
+
+        # TODO: handle request and parse errors
+        data = req.json()
+        props = data['features'][0]['properties']
+        osm_type = props['osm_type']
+        osm_id   = props['osm_id']
+        return f"{osm_type}{osm_id}"
 
     def scrape(self) -> [Listing]:
         headers = { "content-type": "application/json", }

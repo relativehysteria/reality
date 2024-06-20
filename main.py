@@ -10,8 +10,8 @@ pool = ThreadPoolExecutor(max_workers=10)
 regions = ["okres Brno-město", "okres Brno-venkov"]
 dispositions = ["1+kk", "1+1"]
 
-br_regions = pool.map(bezrealitky.query_region, regions.copy())
-sr_regions = pool.map(sreality.query_region, regions.copy())
+br_regions = pool.map(bezrealitky.Scraper.query_region, regions.copy())
+sr_regions = pool.map(sreality.Scraper.query_region, regions.copy())
 
 br_dispositions = bezrealitky.Dispositions(dispositions.copy())
 br_scraper = bezrealitky.Scraper(list(br_regions), br_dispositions)
