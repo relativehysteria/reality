@@ -89,20 +89,23 @@ if __name__ == "__main__":
     DB_NAME = "ids"
 
     # Get new data, load old data and check new IDs
+    print("it's free real estate...")
     new_data = get_listings(regions, dispositions)
     old_data = read_db(DB_NAME)
     new_ids = get_new_listings(new_data, old_data)
 
-    # Show the urls of new listings
-    for reality in new_ids:
-        if len(new_ids[reality]) == 0:
-            continue
+    # If this isn't the first time we're scraping
+    if len(old_data) != 0:
+        # Show the urls of new listings
+        for reality in new_ids:
+            if len(new_ids[reality]) == 0:
+                continue
 
-        print(reality)
-        for obj in new_ids[reality]:
-            print(f"  > {obj.disposition} | {obj.area} m²", end=" | ")
-            print(f"{obj.price} Kč | {obj.location}")
-            print(f"  > {obj.url}\n")
+            print(reality)
+            for obj in new_ids[reality]:
+                print(f"  > {obj.disposition} | {obj.area} m²", end=" | ")
+                print(f"{obj.price} Kč | {obj.location}")
+                print(f"  > {obj.url}\n")
 
     # Write the data down
     write_db(new_data, DB_NAME)
