@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+from os import system
 from concurrent.futures import ThreadPoolExecutor
 import importlib
 import pkgutil
 import json
+from config import *
 
 def get_listings_future(module, threadpool, regions, dispositions):
     # Query regions ids, dispositions and build the scraper
@@ -84,7 +86,11 @@ def get_new_listings(new, old):
 
 if __name__ == "__main__":
     regions = ["okres Brno-město"]
-    dispositions = ["1+kk", "1+1", "2+kk", "2+1", "3+kk", "3+1"]
+    dispositions = ["1+kk", "1+1", "2+kk", "2+1", "3+kk", "3+1", "4+kk", "4+1"]
+    filters = [
+        lambda listing: listing.area > 40,
+        lambda listing: listing.price < 20000,
+    ]
 
     DB_NAME = "ids"
 
@@ -92,17 +98,26 @@ if __name__ == "__main__":
     print("it's free real estate...")
     new_data = get_listings(regions, dispositions)
     old_data = read_db(DB_NAME)
-    new_ids = get_new_listings(new_data, old_data)
+    new_listings = get_new_listings(new_data, old_data)
+
+    # Filter the listings
+    for f in filters:
+        for key in new_listings:
+            new_listings[key] = list(filter(f, new_listings[key]))
 
     # If this isn't the first time we're scraping
     if len(old_data) != 0:
         # Show the urls of new listings
-        for reality in new_ids:
-            if len(new_ids[reality]) == 0:
+        for reality in new_listings:
+            if len(new_listings[reality]) == 0:
                 continue
 
             print(reality)
-            for obj in new_ids[reality]:
+            for obj in new_listings[reality]:
+                # open this shit in the browser
+                system(f"{browser} {obj.url}")
+
+                # print it out to the terminal
                 print(f"  > {obj.disposition} | {obj.area} m²", end=" | ")
                 print(f"{obj.price} Kč | {obj.location}")
                 print(f"  > {obj.url}\n")
