@@ -35,12 +35,12 @@ class DispositionsRoot:
 
 class ListingRoot:
     def __init__(self, **kwargs):
-        self.id = None
-        self.disposition = None
-        self.area = None
-        self.price = None
-        self.images = None
-        self.url = None
+        self.id: int = None
+        self.disposition: str = None
+        self.area: int = None
+        self.price: int = None
+        self.images: list[str]  = None
+        self.url: str = None
 
     def __str__(self):
         return f"{self.disposition:>4}" +\

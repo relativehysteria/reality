@@ -31,8 +31,8 @@ class Listing(ListingRoot):
         self.id = int(kwargs['id'])
         self.disposition = Dispositions.api_to_disp_str(kwargs['disposition'])
         self.location = kwargs['address']
-        self.area = kwargs['surface']
-        self.price = kwargs['price']
+        self.area = int(kwargs['surface'])
+        self.price = int(kwargs['price'])
         self.charges = kwargs['charges']
         self.url  = "https://www.bezrealitky.cz/nemovitosti-byty-domy/"
         self.url += kwargs['uri']

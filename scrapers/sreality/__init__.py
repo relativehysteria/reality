@@ -45,8 +45,8 @@ class Listing(ListingRoot):
         self.disposition = Dispositions.api_to_disp_str(
                 kwargs['seo']['category_sub_cb'])
         self.location = kwargs['locality']
-        self.area = kwargs['name'].split('(')[0].split()[-2]
-        self.price = kwargs['price']
+        self.area = int(kwargs['name'].split('(')[0].split()[-2])
+        self.price = int(kwargs['price'])
         self.images = [i['href'] for i in kwargs['_links']['images']]
         self.url  = "https://www.sreality.cz/detail/pronajem/byt/"
         self.url += f"{self.disposition}/{kwargs['seo']['locality']}/{self.id}"
