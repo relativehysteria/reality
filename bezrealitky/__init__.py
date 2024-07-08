@@ -28,7 +28,7 @@ class Dispositions(DispositionsRoot):
 
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
-        self.id = kwargs['id']
+        self.id = int(kwargs['id'])
         self.disposition = Dispositions.api_to_disp_str(kwargs['disposition'])
         self.location = kwargs['address']
         self.area = kwargs['surface']

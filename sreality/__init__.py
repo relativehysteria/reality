@@ -41,7 +41,7 @@ def min_max(var=(None, None)):
 
 class Listing(ListingRoot):
     def __init__(self, **kwargs):
-        self.id = kwargs['hash_id']
+        self.id = int(kwargs['hash_id'])
         self.disposition = Dispositions.api_to_disp_str(
                 kwargs['seo']['category_sub_cb'])
         self.location = kwargs['locality']
