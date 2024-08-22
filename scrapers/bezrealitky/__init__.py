@@ -36,29 +36,6 @@ class Listing(ListingRoot):
         self.charges = kwargs['charges']
         self.url  = "https://www.bezrealitky.cz/nemovitosti-byty-domy/"
         self.url += kwargs['uri']
-        self.images = None
-        self.mainImageUrl = None
-        if kwargs['mainImageUrl']:
-            self.mainImageUrl = kwargs['mainImageUrl']['url']
-
-    def get_images(self):
-        if self.images is not None:
-            return self.images
-        return self.scrape_images()
-
-    def scrape_images(self):
-        headers = { "content-type": "application/json", }
-        payload = {
-            "operationName": "AdvertDetail",
-            "variables": vars(self),
-            "query": queries.IMAGES,
-        }
-        # TODO: handle request and parse errors
-        req = requests.post(GRAPH_URL, headers=headers, json=payload)
-
-        images = req.json()['data']['advert']['publicImages']
-        self.images = [image['url'] for image in images]
-        return self.images
 
 
 class Scraper(ScraperRoot):

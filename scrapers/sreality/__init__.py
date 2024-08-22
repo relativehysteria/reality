@@ -47,22 +47,8 @@ class Listing(ListingRoot):
         self.location = kwargs['locality']
         self.area = int(kwargs['name'].split('(')[0].split()[-2])
         self.price = int(kwargs['price'])
-        self.images = [i['href'] for i in kwargs['_links']['images']]
         self.url  = "https://www.sreality.cz/detail/pronajem/byt/"
         self.url += f"{self.disposition}/{kwargs['seo']['locality']}/{self.id}"
-
-    def get_images(self):
-        return self.images
-
-    def scrape_images(self):
-        # XXX: This doesn't "scrape" the images per se, just replaces their
-        # url with a higher resolution watermarked image
-        x = '?fl=res,1920,1080,1|wrm,/watermark/sreality.png,10|shr,,20|jpg,90'
-        for (idx, img) in enumerate(self.images):
-            img  = img.split('?')[0]
-            img += x
-            self.images[idx] = img
-        return self.images
 
 
 class Scraper(ScraperRoot):

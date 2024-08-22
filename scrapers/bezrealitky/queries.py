@@ -1,15 +1,3 @@
-IMAGES = """
-    query AdvertDetail(
-        $id: ID!,
-    ) {
-        advert(id: $id) {
-            publicImages {
-                url(filter: RECORD_MAIN)
-            }
-        }
-    }
-"""
-
 INITIAL = """
     query AdvertList(
         $locale: Locale!,
@@ -44,9 +32,6 @@ INITIAL = """
                 uri
                 id
                 disposition
-                mainImageUrl: mainImage {
-                    url(filter: RECORD_THUMB)
-                }
                 address(locale: $locale)
                 surface
                 tags(locale: $locale)

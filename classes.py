@@ -39,7 +39,6 @@ class ListingRoot:
         self.disposition: str = None
         self.area: int = None
         self.price: int = None
-        self.images: list[str]  = None
         self.url: str = None
 
     def __str__(self):
@@ -47,12 +46,6 @@ class ListingRoot:
                f" | {self.area:>3}m²" +\
                f" | {self.price:>5},-" +\
                f" | {self.location}"
-
-    def get_images(self):
-        raise NotImplementedError
-
-    def scrape_images(self):
-        raise NotImplementedError
 
 
 class ScraperRoot:
