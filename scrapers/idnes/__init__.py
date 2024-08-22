@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus, urlencode
 from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class Dispositions(DispositionsRoot):
@@ -78,50 +79,69 @@ class Scraper(ScraperRoot):
             class_="paginator paging mt--20 mb-45 text-center m-auto")]
         n_pages = int(n_pages[-4].text)
 
-        # We scraped the first page already; save it and scrape the rest
-        page_soups = [soup]
-        for page in range(1, n_pages):
-            req = requests.get(url + f"&page={page}")
-
+        # Function to scrape a single page
+        def scrape_page(page):
+            page_url = url + f"&page={page}"
+            req = requests.get(page_url)
             if req.ok:
-                page_soups.append(BeautifulSoup(req.text, features="lxml"))
+                return BeautifulSoup(req.text, features="lxml")
             else:
                 print(f"idnes scraping failed for page {page}")
+                return None
 
-        # Go through each of the soups and get the listings
+        # Function to parse a soup and extract listings
+        def parse_soup(soup):
+            listings = []
+            if soup:
+                entries = soup.find_all(
+                    class_="grid__cell size--t-4-12 size--m-6-12 size--s-12-12")
+
+                for entry in entries:
+                    # Skip ads
+                    if entry.find(class_="c-products__item-advertisment"):
+                        continue
+
+                    # Get the info required for `Listing`
+                    url = entry.find(class_="c-products__link")['href']
+                    ident = int(url.strip('/').split('/')[-1], 16)
+
+                    info = entry.find(class_="c-products__title").text.split()
+                    disp = info[2]
+                    area = int(info[3])
+
+                    location = \
+                        entry.find(class_="c-products__info").text.strip()
+
+                    # Skip listings with unlisted prices
+                    price = \
+                        entry.find(class_="c-products__price").text.split()[:-1]
+
+                    try:
+                        price = int(''.join(price))
+                    except:
+                        continue
+
+                    # Save the listing
+                    listings.append(Listing(
+                        id=ident, disposition=disp, area=area, price=price,
+                        url=url, location=location))
+            return listings
+
+        # Use ThreadPoolExecutor to scrape pages in parallel
+        page_soups = [soup]  # First page is already scraped
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = [executor.submit(scrape_page, page)
+                       for page in range(1, n_pages)]
+            for future in as_completed(futures):
+                result = future.result()
+                if result:
+                    page_soups.append(result)
+
+        # Use ThreadPoolExecutor to parse pages in parallel
         listings = []
-        for soup in page_soups:
-            # Get the listing entries
-            entries = soup.find_all(
-                class_="grid__cell size--t-4-12 size--m-6-12 size--s-12-12")
-
-            # Go through each entry
-            for entry in entries:
-                # Skip ads
-                if entry.find(class_="c-products__item-advertisment"):
-                    continue
-
-                # Get the info required for `Listing`
-
-                url = entry.find(class_="c-products__link")['href']
-                ident = int(url.strip('/').split('/')[-1], 16)
-
-                info = entry.find(class_="c-products__title").text.split()
-                disp = info[2]
-                area = int(info[3])
-
-                location = entry.find(class_="c-products__info").text.strip()
-
-                # Skip listings with unlisted prices
-                price = entry.find(class_="c-products__price").text.split()[:-1]
-                try:
-                    price = int(''.join(price))
-                except:
-                    continue
-
-                # Save the listing
-                listings.append(Listing(
-                    id=ident, disposition=disp, area=area, price=price,
-                    url=url, location=location))
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = [executor.submit(parse_soup, soup) for soup in page_soups]
+            for future in as_completed(futures):
+                listings.extend(future.result())
 
         return listings
