@@ -36,6 +36,7 @@ class DispositionsRoot:
 class ListingRoot:
     def __init__(self, **kwargs):
         self.id: int = None
+        self.location: str = None
         self.disposition: str = None
         self.area: int = None
         self.price: int = None
