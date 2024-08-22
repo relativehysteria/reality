@@ -1,6 +1,6 @@
-regions = ["okres Brno-město"]
+regions = ["okres Brno-město", "okres Brno-venkov"]
 
-dispositions = ["1+kk", "1+1", "2+kk", "2+1", "3+kk", "3+1", "4+kk", "4+1"]
+dispositions = ["1+1", "2+kk"]
 
 filters = [
     lambda listing: listing.area > 40,

@@ -23,7 +23,7 @@ class Dispositions(DispositionsRoot):
             valid_type = disp_type == "kk" or disp_type == "1"
             return valid_nrooms and valid_type
         except:
-            return false
+            return False
 
 
 class Listing(ListingRoot):

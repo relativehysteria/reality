@@ -36,7 +36,7 @@ def get_listings(regs, disps):
 
     # Scrape images in the background and save the listings scraped
     for (module, future) in futures:
-        pool.map(module.Listing.scrape_images, future.result())
+        # pool.map(module.Listing.scrape_images, future.result())
 
         module_name = module.__name__.split('.')[-1]
         listings[module_name] = future.result()
