@@ -60,7 +60,8 @@ class Scraper(ScraperRoot):
     def query_region(cls, query: str) -> str:
         url = "https://autocomplete.bezrealitky.cz/autocomplete?size=1"
         query = quote_plus(query)
-        req = requests.get(f"{url}&q={query}")
+        headers = {"Accept-Language": "cs,*;q=0.1"}
+        req = requests.get(f"{url}&q={query}", headers=headers)
 
         # TODO: handle request and parse errors
         data = req.json()
