@@ -1,6 +1,38 @@
 from typing import Optional, List, Tuple
 from sys import stderr
 
+# A site-specific listing.
+#
+# This is the root class that has to be implemented by all scrapers. As such,
+# the class variables here can be matched against in `config.filters` as they
+# are guaranteed to be present.
+class ListingRoot:
+    def __init__(self, **kwargs):
+        # Site specific identifier for the estate.
+        self.id: int = None
+
+        # Site specific geographical location of the estate.
+        self.location: str = None
+
+        # Disposition of the estate in the form our script uses.
+        self.disposition: str = None
+
+        # Area of the estate in square meters.
+        self.area: int = None
+
+        # Site specific price of the estate, usually in czk.
+        self.price: int = None
+
+        # Site specific URL of the state.
+        self.url: str = None
+
+    def __str__(self):
+        return f"{self.disposition:>4}" +\
+               f" | {self.area:>3}m²" +\
+               f" | {self.price:>5},-" +\
+               f" | {self.location}"
+
+
 # Dispositions are in the form of 1+kk, 1+1, 2+kk, 2+2 etc.
 class DispositionsRoot:
     def __init__(self, disp_list=[]):
@@ -42,38 +74,6 @@ class DispositionsRoot:
     @classmethod
     def disp_str_to_api(cls, disp_str: str):
         raise NotImplementedError
-
-
-# A site-specific listing.
-#
-# This is the root class that has to be implemented by all scrapers. As such,
-# the class variables here can be matched against in `config.filters` as they
-# are guaranteed to be present.
-class ListingRoot:
-    def __init__(self, **kwargs):
-        # Site specific identifier for the estate.
-        self.id: int = None
-
-        # Site specific geographical location of the estate.
-        self.location: str = None
-
-        # Disposition of the estate in the form our script uses.
-        self.disposition: str = None
-
-        # Area of the estate in square meters.
-        self.area: int = None
-
-        # Site specific price of the estate, usually in czk.
-        self.price: int = None
-
-        # Site specific URL of the state.
-        self.url: str = None
-
-    def __str__(self):
-        return f"{self.disposition:>4}" +\
-               f" | {self.area:>3}m²" +\
-               f" | {self.price:>5},-" +\
-               f" | {self.location}"
 
 
 # The site-specific scraper.
