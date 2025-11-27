@@ -1,16 +1,16 @@
 # Scrapers from the `scrapers` directory that will be run.
 #
-# For example the idnes scraper will cause a lot of duplicated real estates to
-# show up because many of them are listed on sreality as well; that's why it's
-# not included here.
+# For example, one might want to disable the idnes scraper because idnes has
+# many listings duplicated with sreality.
 enabled_scrapers = ["bezrealitky", "idnes", "sreality"]
 
 # Geographical regions where we're looking for real estates.
 #
 # This will use the first result returned by the site-specific API. For example,
 # if one of these regions is nonsensical (say, "aosidghaohgfda"), it will use
-# the first result returned by the API, if any is returned at all.
-regions = ["okres Brno-město", "okres Brno-venkov", "dsafojojo"]
+# the first result returned by the API. If no results are returned, the location
+# is skipped.
+regions = ["okres Brno-město", "okres Brno-venkov"]
 
 # Dispositions of the estates we want to scrape, in the format "N+1" and "N+kk"
 dispositions = ["1+1", "2+kk", "2+1", "3+kk"]
