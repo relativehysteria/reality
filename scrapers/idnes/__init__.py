@@ -11,7 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 def get_soup(html: str) -> BeautifulSoup:
     if system_name == "nt":
         return BeautifulSoup(html)
-    return BeautifulSoup(html, features="lxml")
+    return BeautifulSoup(html, features="html.parser")
 
 
 class Dispositions(DispositionsRoot):
