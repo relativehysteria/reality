@@ -98,18 +98,16 @@ if __name__ == "__main__":
         for key in new_listings:
             new_listings[key] = list(filter(f, new_listings[key]))
 
-    # If this isn't the first time we're scraping
-    if len(old_data) != 0:
-        # Open the listings in a browser, in parallel
-        for reality in new_listings:
-            if len(new_listings[reality]) == 0:
-                continue
+    # Open the listings in a browser, in parallel
+    for reality in new_listings:
+        if len(new_listings[reality]) == 0:
+            continue
 
-            with ThreadPoolExecutor() as executor:
-                def process_listing(obj):
-                    system(f"{browser} {obj.url}")
+        with ThreadPoolExecutor() as executor:
+            def process_listing(obj):
+                system(f"{browser} {obj.url}")
 
-                executor.map(process_listing, new_listings[reality])
+            executor.map(process_listing, new_listings[reality])
 
     # Write the data down
     write_db(new_data, DB_NAME)
