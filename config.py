@@ -23,5 +23,5 @@ filters = [
     lambda listing: listing.price < 18000,
 ]
 
-# The browser in which.
+# The browser in which the estate listings will be shown.
 browser = "firefox"
