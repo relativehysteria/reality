@@ -1,3 +1,4 @@
+from os import name as system_name
 from typing import Optional, List, Tuple
 from classes import *
 import requests
@@ -5,6 +6,12 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote_plus, urlencode
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
+
+def get_soup(html: str) -> BeautifulSoup:
+    if system_name == "nt":
+        return BeautifulSoup(html)
+    return BeautifulSoup(html, features="lxml")
 
 
 class Dispositions(DispositionsRoot):
@@ -79,7 +86,7 @@ class Scraper(ScraperRoot):
         req = requests.get(url)
 
         # Get the number of pages that we'll have to scrape
-        soup = BeautifulSoup(req.text, features="lxml")
+        soup = get_soup(req.text)
         n_pages = [i for i in soup.find(
             class_="paginator paging mt--20 mb-45 text-center m-auto")]
         n_pages = int(n_pages[-4].text)
@@ -89,7 +96,7 @@ class Scraper(ScraperRoot):
             page_url = url + f"&page={page}"
             req = requests.get(page_url)
             if req.ok:
-                return BeautifulSoup(req.text, features="lxml")
+                return get_soup(req.text)
             else:
                 print(f"idnes scraping failed for page {page}")
                 return None
