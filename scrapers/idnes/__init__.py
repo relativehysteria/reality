@@ -1,3 +1,4 @@
+from typing import Optional, List, Tuple
 from classes import *
 import requests
 from bs4 import BeautifulSoup
@@ -55,19 +56,23 @@ class Scraper(ScraperRoot):
         self.area_max = f"&s-qc[usableAreaMax][{area[1]}]" if area[1] else ""
 
     @classmethod
-    def query_region(cls, query: str) -> str:
+    def query_region(cls, orig_query: str) -> Tuple[str, Optional[str]]:
         url  = "https://reality.idnes.cz/admin.api/autocomplete-locality"
         url += "?fe=1&types[0]=OKRES&types[1]=OBEC"
-        query = quote_plus(query)
+        query = quote_plus(orig_query)
         req = requests.get(f"{url}&string={query}")
 
         # TODO: handle request and parse errors
-        data     = req.json()[0]
+        result = req.json()
+        if len(result) == 0:
+            return (orig_query, None)
+
+        data = result[0]
         req_type = data["type"]
         req_id   = data["id"]
-        return f"{req_type}-{req_id}"
+        return (orig_query, f"{req_type}-{req_id}")
 
-    def scrape(self) -> [Listing]:
+    def scrape(self) -> List[Listing]:
         url  = f"https://reality.idnes.cz/s/pronajem/byty/?"
         url += ''.join(vars(self).values())
 

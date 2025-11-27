@@ -1,7 +1,8 @@
-from . import queries
-from classes import *
+from typing import Optional, List, Tuple
 import requests
 from urllib.parse import quote_plus
+from . import queries
+from classes import *
 
 GRAPH_URL = "https://api.bezrealitky.cz/graphql/"
 
@@ -57,20 +58,22 @@ class Scraper(ScraperRoot):
         self.surfaceTo = area[1]
 
     @classmethod
-    def query_region(cls, query: str) -> str:
+    def query_region(cls, orig_query: str) -> Tuple[str, Optional[str]]:
         url = "https://autocomplete.bezrealitky.cz/autocomplete?size=1"
-        query = quote_plus(query)
+        query = quote_plus(orig_query)
         headers = {"Accept-Language": "cs,*;q=0.1"}
         req = requests.get(f"{url}&q={query}", headers=headers)
 
-        # TODO: handle request and parse errors
-        data = req.json()
-        props = data['features'][0]['properties']
+        result = req.json()['features']
+        if len(result) == 0:
+            return (orig_query, None)
+
+        props = result[0]['properties']
         osm_type = props['osm_type']
         osm_id   = props['osm_id']
-        return f"{osm_type}{osm_id}"
+        return (orig_query, f"{osm_type}{osm_id}")
 
-    def scrape(self) -> [Listing]:
+    def scrape(self) -> List[Listing]:
         headers = { "content-type": "application/json", }
         payload = {
             "operationName": "AdvertList",

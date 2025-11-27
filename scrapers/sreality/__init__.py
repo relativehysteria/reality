@@ -1,7 +1,7 @@
-from classes import *
+from typing import Optional, List, Tuple
 import requests
 from urllib.parse import quote_plus, urlencode
-
+from classes import *
 
 class Dispositions(DispositionsRoot):
     @classmethod
@@ -66,15 +66,18 @@ class Scraper(ScraperRoot):
         self.usable_area = min_max(area)
 
     @classmethod
-    def query_region(cls, query: str) -> str:
+    def query_region(cls, orig_query: str) -> Tuple[str, Optional[str]]:
         url = "https://www.sreality.cz/api/v1/localities/suggest?limit=1"
-        query = quote_plus(query)
+        query = quote_plus(orig_query)
         req = requests.get(f"{url}&phrase={query}")
 
-        # TODO: handle request and parse errors
-        return req.json()['results'][0]['userData']['district_id']
+        results = req.json()['results']
+        if len(results) == 0:
+            return (orig_query, None)
+        else:
+            return (orig_query, results[0]['userData']['district_id'])
 
-    def scrape(self) -> [Listing]:
+    def scrape(self) -> List[Listing]:
         url = "https://www.sreality.cz/api/cs/v2/estates"
         headers = {
             "Content-Type": "application/json",

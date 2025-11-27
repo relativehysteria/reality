@@ -1,21 +1,46 @@
 #!/usr/bin/env python
 
-from os import system
+from sys import stderr
+from types import ModuleType
+from typing import Optional, Tuple, List
+from os import system, name as system_name
 from concurrent.futures import ThreadPoolExecutor
 import importlib
 import pkgutil
 import json
 import config
 
-def get_listings_future(module, threadpool, regions, dispositions):
-    # Query regions ids, dispositions and build the scraper
-    regions = threadpool.map(module.Scraper.query_region, regions.copy())
+def get_listings_future(
+    module: ModuleType,
+    pool: ThreadPoolExecutor,
+    provided_regs: List[str],
+    dispositions: List[str]
+) -> Optional[Tuple[ModuleType, ThreadPoolExecutor]]:
+    mod_name = module.__name__.replace("scrapers.", "")
+
+    # Query regions ids, dispositions and build the scraper, in parallel
+    regions = pool.map(module.Scraper.query_region, provided_regs.copy())
     dispositions = module.Dispositions(dispositions.copy())
-    scraper = module.Scraper(list(regions), dispositions)
+
+    # Print out the regions we weren't able to scrape
+    regions = [i for i in regions]
+    parsed = set(i[0] for i in regions if i[1] is not None)
+    provided = set(provided_regs)
+    for reg in (provided - parsed):
+        print(f'{mod_name}: Couldn\'t find estates in "{reg}".', file=stderr)
+
+    # Retain the regions we actually parsed
+    regions = [i[1] for i in regions if i[1] is not None]
+
+    # If there are no regions whatsoever, bail out
+    if len(regions) == 0:
+        print(f"{mod_name}: No regions could be scraped.", file=stderr)
+        return None
 
     # Start scraping and return the listings together with the module
     # from which the scraper was imported
-    listings_future = threadpool.submit(module.Scraper.scrape, scraper)
+    scraper = module.Scraper(list(regions), dispositions)
+    listings_future = pool.submit(module.Scraper.scrape, scraper)
     return (module, listings_future)
 
 
@@ -28,19 +53,18 @@ def get_listings(regs, disps):
     modules = [
         importlib.import_module(f"{package.__name__}.{name}")
         for _, name, _ in pkgutil.iter_modules(package.__path__)
-        if name not in config.disabled_scrapers
+        if name in config.enabled_scrapers
     ]
 
-    breakpoint()
+    # Collect the futures of the scraper tasks
+    futures = [pool.submit(get_listings_future, m, pool, regs, disps)
+               for m in modules]
+    futures = [i.result() for i in futures if i.result() is not None]
 
-    # Execute all implemented scrapers
+
+    # Invoke the tasks and save the results
     listings = {}
-    futures = [get_listings_future(m, pool, regs, disps) for m in modules]
-
-    # Scrape images in the background and save the listings scraped
     for (module, future) in futures:
-        # pool.map(module.Listing.scrape_images, future.result())
-
         module_name = module.__name__.split('.')[-1]
         listings[module_name] = future.result()
 
@@ -106,9 +130,15 @@ if __name__ == "__main__":
         if len(new_listings[reality]) == 0:
             continue
 
+        # If we're on windows, we have to prepend "exec"
+        exec_string = f"{config.browser}"
+        if system_name == "nt":
+            exec_string = f"exec {sys_string}"
+
+        # Open the listings in parallel
         with ThreadPoolExecutor() as executor:
             def process_listing(obj):
-                system(f"{config.browser} {obj.url}")
+                system(f"{exec_string} {obj.url}")
 
             executor.map(process_listing, new_listings[reality])
 
