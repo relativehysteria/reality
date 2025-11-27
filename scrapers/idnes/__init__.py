@@ -1,3 +1,4 @@
+from sys import stderr
 from os import name as system_name
 from typing import Optional, List, Tuple
 from classes import *
@@ -87,8 +88,15 @@ class Scraper(ScraperRoot):
 
         # Get the number of pages that we'll have to scrape
         soup = get_soup(req.text)
-        n_pages = [i for i in soup.find(
-            class_="paginator paging mt--20 mb-45 text-center m-auto")]
+        pages = soup.find(
+                class_="paginator paging mt--20 mb-45 text-center m-auto")
+
+        # Don't know why this doesn't work; don't care in particular
+        if pages is None:
+            print("Couldn't locate the paginator in idnes..", file=stderr)
+            return []
+
+        n_pages = [i for i in pages]
         n_pages = int(n_pages[-4].text)
 
         # Function to scrape a single page
@@ -98,7 +106,7 @@ class Scraper(ScraperRoot):
             if req.ok:
                 return get_soup(req.text)
             else:
-                print(f"idnes scraping failed for page {page}")
+                print(f"idnes scraping failed for page {page}", file=stderr)
                 return None
 
         # Function to parse a soup and extract listings
