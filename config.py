@@ -8,3 +8,5 @@ filters = [
 ]
 
 browser = "firefox"
+
+disabled_scrapers = ["idnes"]

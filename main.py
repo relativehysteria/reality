@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 import importlib
 import pkgutil
 import json
-from config import *
+import config
 
 def get_listings_future(module, threadpool, regions, dispositions):
     # Query regions ids, dispositions and build the scraper
@@ -28,7 +28,10 @@ def get_listings(regs, disps):
     modules = [
         importlib.import_module(f"{package.__name__}.{name}")
         for _, name, _ in pkgutil.iter_modules(package.__path__)
+        if name not in config.disabled_scrapers
     ]
+
+    breakpoint()
 
     # Execute all implemented scrapers
     listings = {}
@@ -89,12 +92,12 @@ if __name__ == "__main__":
 
     # Get new data, load old data and check new IDs
     print("it's free real estate...")
-    new_data = get_listings(regions, dispositions)
+    new_data = get_listings(config.regions, config.dispositions)
     old_data = read_db(DB_NAME)
     new_listings = get_new_listings(new_data, old_data)
 
     # Filter the listings
-    for f in filters:
+    for f in config.filters:
         for key in new_listings:
             new_listings[key] = list(filter(f, new_listings[key]))
 
@@ -105,7 +108,7 @@ if __name__ == "__main__":
 
         with ThreadPoolExecutor() as executor:
             def process_listing(obj):
-                system(f"{browser} {obj.url}")
+                system(f"{config.browser} {obj.url}")
 
             executor.map(process_listing, new_listings[reality])
 
